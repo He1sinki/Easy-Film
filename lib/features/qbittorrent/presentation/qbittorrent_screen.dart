@@ -64,18 +64,20 @@ class _QbittorrentScreenState extends State<QbittorrentScreen>
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _controller.isLoading ? null : _controller.uploadTorrent,
-        backgroundColor: colors.primary,
-        foregroundColor: Colors.white,
-        icon: _controller.isLoading
-            ? const SizedBox(
-                width: 18, height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-              )
-            : const Icon(Icons.add_rounded),
-        label: const Text('Ajouter'),
-      ),
+      floatingActionButton: torrents.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _controller.isLoading ? null : _controller.uploadTorrent,
+              backgroundColor: const Color(0xFF6C63FF),
+              foregroundColor: Colors.white,
+              icon: _controller.isLoading
+                  ? const SizedBox(
+                      width: 18, height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.add_rounded),
+              label: const Text('Ajouter'),
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: _controller.refreshNow,
         color: colors.primary,

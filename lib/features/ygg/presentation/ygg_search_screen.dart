@@ -58,6 +58,30 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
     final sendStatus = _controller.sendStatusFor(result.infoHash);
     if (sendStatus == SendTorrentStatus.sending) return;
 
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Envoyer vers qBittorrent ?'),
+        content: Text(
+          result.title,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Envoyer'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
     final needsConfig = await _controller.sendTorrent(result);
 
     if (needsConfig && mounted) {

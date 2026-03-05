@@ -101,179 +101,192 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── qBittorrent & FileBrowser side by side ──
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 600;
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ── qBittorrent section ──
-                Expanded(
-                  child: _SettingsSection(
-                    icon: Icons.downloading_rounded,
-                    iconColor: const Color(0xFF6C63FF),
-                    title: 'qBittorrent',
-                    subtitle: 'Utilisé pour ajouter, suivre et contrôler les torrents.',
+                // ── qBittorrent & FileBrowser ──
+                if (isWide)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextField(
-                        controller: _qbUrl,
-                        decoration: const InputDecoration(
-                          labelText: 'URL / IP',
-                          hintText: 'http://localhost:8081',
-                          prefixIcon: Icon(Icons.link_rounded, size: 20),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      TextField(
-                        controller: _qbUser,
-                        decoration: const InputDecoration(
-                          labelText: 'Identifiant',
-                          prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      TextField(
-                        controller: _qbPass,
-                        obscureText: !_showQbPass,
-                        decoration: InputDecoration(
-                          labelText: 'Mot de passe',
-                          prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
-                          suffixIcon: IconButton(
-                            icon: Icon(_showQbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
-                            onPressed: () => setState(() => _showQbPass = !_showQbPass),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: _controller.isTestingQb ? null : () {
-                            _syncModelFromFields();
-                            _controller.testQbConnection();
-                          },
-                          icon: _controller.isTestingQb
-                              ? const SizedBox(
-                                  height: 16, width: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.wifi_tethering_rounded, size: 18),
-                          label: const Text('Tester'),
-                        ),
-                      ),
+                      Expanded(child: _buildQbSection()),
+                      const SizedBox(width: AppSpacing.lg),
+                      Expanded(child: _buildFbSection()),
                     ],
+                  )
+                else ...[
+                  _buildQbSection(),
+                  const SizedBox(height: AppSpacing.lg),
+                  _buildFbSection(),
+                ],
+                const SizedBox(height: AppSpacing.lg),
+
+                // ── Target folder section ──
+                _SettingsSection(
+                  icon: Icons.movie_rounded,
+                  iconColor: const Color(0xFF4DD0E1),
+                  title: 'Dossier média',
+                  subtitle: 'Chemin racine utilisé pour explorer les vidéos.',
+                  children: [
+                    TextField(
+                      controller: _target,
+                      decoration: const InputDecoration(
+                        labelText: 'Dossier cible',
+                        hintText: '/Films',
+                        prefixIcon: Icon(Icons.folder_open_rounded, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xl),
+
+                // ── Save button ──
+                FilledButton(
+                  onPressed: _controller.isLoading ? null : _save,
+                  child: _controller.isLoading
+                      ? const SizedBox(
+                          height: 18, width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text('Sauvegarder'),
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+
+                // ── Version ──
+                Center(
+                  child: Text(
+                    'Easy Film v0.1.0',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colors.onSurface.withValues(alpha: 0.25),
+                    ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.lg),
-                // ── FileBrowser section ──
-                Expanded(
-                  child: _SettingsSection(
-                    icon: Icons.folder_rounded,
-                    iconColor: const Color(0xFFFFA726),
-                    title: 'FileBrowser',
-                    subtitle: 'Permet de naviguer dans les fichiers et lancer les téléchargements.',
-                    children: [
-                      TextField(
-                        controller: _fbUrl,
-                        decoration: const InputDecoration(
-                          labelText: 'URL (HTTPS ou HTTP local)',
-                          hintText: 'http://localhost:8080',
-                          prefixIcon: Icon(Icons.link_rounded, size: 20),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      TextField(
-                        controller: _fbUser,
-                        decoration: const InputDecoration(
-                          labelText: 'Identifiant',
-                          prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      TextField(
-                        controller: _fbPass,
-                        obscureText: !_showFbPass,
-                        decoration: InputDecoration(
-                          labelText: 'Mot de passe',
-                          prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
-                          suffixIcon: IconButton(
-                            icon: Icon(_showFbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
-                            onPressed: () => setState(() => _showFbPass = !_showFbPass),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: _controller.isTestingFb ? null : () {
-                            _syncModelFromFields();
-                            _controller.testFbConnection();
-                          },
-                          icon: _controller.isTestingFb
-                              ? const SizedBox(
-                                  height: 16, width: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                )
-                              : const Icon(Icons.wifi_tethering_rounded, size: 18),
-                          label: const Text('Tester'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: AppSpacing.lg),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // ── Target folder section ──
-            _SettingsSection(
-              icon: Icons.movie_rounded,
-              iconColor: const Color(0xFF4DD0E1),
-              title: 'Dossier média',
-              subtitle: 'Chemin racine utilisé pour explorer les vidéos.',
-              children: [
-                TextField(
-                  controller: _target,
-                  decoration: const InputDecoration(
-                    labelText: 'Dossier cible',
-                    hintText: '/Films',
-                    prefixIcon: Icon(Icons.folder_open_rounded, size: 20),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.xl),
-
-            // ── Save button ──
-            FilledButton(
-              onPressed: _controller.isLoading ? null : _save,
-              child: _controller.isLoading
-                  ? const SizedBox(
-                      height: 18, width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Sauvegarder'),
-            ),
-            const SizedBox(height: AppSpacing.xxl),
-
-            // ── Version ──
-            Center(
-              child: Text(
-                'Easy Film v0.1.0',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colors.onSurface.withValues(alpha: 0.25),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-          ],
-        ),
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildQbSection() {
+    return _SettingsSection(
+      icon: Icons.downloading_rounded,
+      iconColor: const Color(0xFF6C63FF),
+      title: 'qBittorrent',
+      subtitle: 'Utilisé pour ajouter, suivre et contrôler les torrents.',
+      children: [
+        TextField(
+          controller: _qbUrl,
+          decoration: const InputDecoration(
+            labelText: 'URL / IP',
+            hintText: 'http://localhost:8081',
+            prefixIcon: Icon(Icons.link_rounded, size: 20),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: _qbUser,
+          decoration: const InputDecoration(
+            labelText: 'Identifiant',
+            prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: _qbPass,
+          obscureText: !_showQbPass,
+          decoration: InputDecoration(
+            labelText: 'Mot de passe',
+            prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+            suffixIcon: IconButton(
+              icon: Icon(_showQbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+              onPressed: () => setState(() => _showQbPass = !_showQbPass),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _controller.isTestingQb ? null : () {
+              _syncModelFromFields();
+              _controller.testQbConnection();
+            },
+            icon: _controller.isTestingQb
+                ? const SizedBox(
+                    height: 16, width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.wifi_tethering_rounded, size: 18),
+            label: const Text('Tester'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFbSection() {
+    return _SettingsSection(
+      icon: Icons.folder_rounded,
+      iconColor: const Color(0xFFFFA726),
+      title: 'FileBrowser',
+      subtitle: 'Permet de naviguer dans les fichiers et lancer les téléchargements.',
+      children: [
+        TextField(
+          controller: _fbUrl,
+          decoration: const InputDecoration(
+            labelText: 'URL (HTTPS ou HTTP local)',
+            hintText: 'http://localhost:8080',
+            prefixIcon: Icon(Icons.link_rounded, size: 20),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: _fbUser,
+          decoration: const InputDecoration(
+            labelText: 'Identifiant',
+            prefixIcon: Icon(Icons.person_outline_rounded, size: 20),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: _fbPass,
+          obscureText: !_showFbPass,
+          decoration: InputDecoration(
+            labelText: 'Mot de passe',
+            prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+            suffixIcon: IconButton(
+              icon: Icon(_showFbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+              onPressed: () => setState(() => _showFbPass = !_showFbPass),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _controller.isTestingFb ? null : () {
+              _syncModelFromFields();
+              _controller.testFbConnection();
+            },
+            icon: _controller.isTestingFb
+                ? const SizedBox(
+                    height: 16, width: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.wifi_tethering_rounded, size: 18),
+            label: const Text('Tester'),
+          ),
+        ),
+      ],
     );
   }
 

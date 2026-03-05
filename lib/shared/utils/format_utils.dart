@@ -53,7 +53,7 @@ class FormatUtils {
   /// Normalizes a file path (deduplicates slashes, ensures leading slash).
   static String normalizePath(String path) {
     final trimmed = path.trim();
-    if (trimmed.isEmpty || trimmed == '/') return '';
+    if (trimmed.isEmpty) return '';
     var normalized = trimmed.replaceAll(RegExp(r'/+'), '/');
     if (!normalized.startsWith('/')) normalized = '/$normalized';
     if (normalized.length > 1 && normalized.endsWith('/')) {
@@ -67,7 +67,7 @@ class FormatUtils {
     final normalized = normalizePath(path);
     if (normalized.isEmpty || normalized == '/') return '';
     final lastSlash = normalized.lastIndexOf('/');
-    if (lastSlash <= 0) return '';
+    if (lastSlash <= 0) return '/';
     return normalized.substring(0, lastSlash);
   }
 
