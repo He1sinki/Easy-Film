@@ -1,0 +1,59 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
+build/
+
+# Flutter generated
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android
+android/
+
+# iOS/macOS
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/macos/Pods/
+**/macos/Flutter/ephemeral/
+
+# Web
+**/web/coverage/
+
+# IDE/OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs/env
+*.log
+.env*
+
+# Screenshots & Playwright
+screenshot-*.png
+.playwright-mcp/
+
+# Speckit / specs
+.specify/
+specs/
+
+# Dev tools & scripts
+scripts/
+tool/
+test/
+
+# Speckit agents & prompts (keep deploy workflow)
+.github/agents/
+.github/prompts/
+
+# Misc
+TODO.md
+.gitkeep
