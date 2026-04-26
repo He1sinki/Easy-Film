@@ -9,6 +9,8 @@ class SettingsFormModel extends Equatable {
     this.filebrowserUsername = '',
     this.filebrowserPassword = '',
     this.targetFolder = '',
+    this.c411ApiBaseUrl = 'https://c411.org',
+    this.c411ApiKey = '',
   });
 
   final String qbittorrentUrl;
@@ -18,6 +20,8 @@ class SettingsFormModel extends Equatable {
   final String filebrowserUsername;
   final String filebrowserPassword;
   final String targetFolder;
+  final String c411ApiBaseUrl;
+  final String c411ApiKey;
 
   SettingsFormModel copyWith({
     String? qbittorrentUrl,
@@ -27,6 +31,8 @@ class SettingsFormModel extends Equatable {
     String? filebrowserUsername,
     String? filebrowserPassword,
     String? targetFolder,
+    String? c411ApiBaseUrl,
+    String? c411ApiKey,
   }) {
     return SettingsFormModel(
       qbittorrentUrl: qbittorrentUrl ?? this.qbittorrentUrl,
@@ -36,6 +42,8 @@ class SettingsFormModel extends Equatable {
       filebrowserUsername: filebrowserUsername ?? this.filebrowserUsername,
       filebrowserPassword: filebrowserPassword ?? this.filebrowserPassword,
       targetFolder: targetFolder ?? this.targetFolder,
+      c411ApiBaseUrl: c411ApiBaseUrl ?? this.c411ApiBaseUrl,
+      c411ApiKey: c411ApiKey ?? this.c411ApiKey,
     );
   }
 
@@ -48,5 +56,7 @@ class SettingsFormModel extends Equatable {
         filebrowserUsername,
         filebrowserPassword,
         targetFolder,
+        c411ApiBaseUrl,
+        c411ApiKey,
       ];
 }

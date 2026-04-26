@@ -24,4 +24,16 @@ class HttpClientFactory {
       ),
     );
   }
+
+  static Dio c411(String baseUrl) {
+    return Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        responseType: ResponseType.json,
+        validateStatus: (status) => (status ?? 500) < 500,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+  }
 }

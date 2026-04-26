@@ -110,7 +110,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           // Search bar
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
               child: TextField(
                 controller: _searchController,
                 textInputAction: TextInputAction.search,
@@ -135,13 +136,17 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           // Search button
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
               child: FilledButton.icon(
-                onPressed: _searchEnabled && !_controller.isLoading ? _onSearch : null,
+                onPressed:
+                    _searchEnabled && !_controller.isLoading ? _onSearch : null,
                 icon: _controller.isLoading
                     ? const SizedBox(
-                        width: 18, height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.search_rounded, size: 18),
                 label: const Text('Rechercher'),
@@ -153,7 +158,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           if (_controller.allResults.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
                 child: _FilterSortBar(controller: _controller),
               ),
             ),
@@ -163,7 +169,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           if (_controller.hasResults)
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
                 child: Row(children: [
                   MetricTile(
                     label: 'Résultats',
@@ -175,7 +182,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
                   MetricTile(
                     label: 'Taille totale',
                     value: FormatUtils.formatBytes(
-                      _controller.results.fold<int>(0, (sum, r) => sum + r.totalSize),
+                      _controller.results
+                          .fold<int>(0, (sum, r) => sum + r.totalSize),
                     ),
                     icon: Icons.storage_rounded,
                     iconColor: const Color(0xFF4DD0E1),
@@ -183,7 +191,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   MetricTile(
                     label: 'Seeders',
-                    value: '${_controller.results.fold<int>(0, (sum, r) => sum + r.seeders)}',
+                    value:
+                        '${_controller.results.fold<int>(0, (sum, r) => sum + r.seeders)}',
                     icon: Icons.upload_rounded,
                     iconColor: const Color(0xFF81C784),
                   ),
@@ -195,20 +204,25 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           if (_controller.errorMessage != null)
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 0),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: colors.errorContainer.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(children: [
-                    Icon(Icons.error_outline_rounded, size: 16, color: colors.error),
+                    Icon(Icons.error_outline_rounded,
+                        size: 16, color: colors.error),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         _controller.errorMessage!,
-                        style: TextStyle(fontSize: 13, color: colors.onSurface.withValues(alpha: 0.8)),
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: colors.onSurface.withValues(alpha: 0.8)),
                       ),
                     ),
                     TextButton(
@@ -243,7 +257,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
               child: EmptyState(
                 icon: Icons.search_rounded,
                 title: 'Recherche de torrents',
-                subtitle: 'Saisissez un terme de recherche pour trouver des torrents sur Ygg.',
+                subtitle:
+                    'Saisissez un terme de recherche pour trouver des torrents sur c411.',
               ),
             )
           // Filter produced empty results
@@ -252,7 +267,8 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
               child: EmptyState(
                 icon: Icons.filter_list_off_rounded,
                 title: 'Aucun résultat dans cette catégorie',
-                subtitle: 'Désélectionnez le filtre pour voir tous les résultats.',
+                subtitle:
+                    'Désélectionnez le filtre pour voir tous les résultats.',
                 actionLabel: 'Tout afficher',
                 onAction: () => _controller.setCategoryFilter(null),
               ),
@@ -260,14 +276,16 @@ class _YggSearchScreenState extends State<YggSearchScreen> {
           // Results list
           else if (_controller.hasResults)
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 100),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 100),
               sliver: SliverList.separated(
                 itemCount: _controller.results.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final result = _controller.results[index];
                   final sendStatus = _controller.sendStatusFor(result.infoHash);
-                  final sendMessage = _controller.sendMessageFor(result.infoHash);
+                  final sendMessage =
+                      _controller.sendMessageFor(result.infoHash);
                   return _TorrentResultCard(
                     result: result,
                     sendStatus: sendStatus,
@@ -312,19 +330,19 @@ class _FilterSortBar extends StatelessWidget {
                   onTap: () => controller.setCategoryFilter(null),
                 ),
                 ...categories.entries.map((entry) => Padding(
-                  padding: const EdgeInsets.only(left: 6),
-                  child: _FilterChip(
-                    label: '${entry.key} (${entry.value})',
-                    selected: activeFilter == entry.key,
-                    onTap: () {
-                      if (activeFilter == entry.key) {
-                        controller.setCategoryFilter(null);
-                      } else {
-                        controller.setCategoryFilter(entry.key);
-                      }
-                    },
-                  ),
-                )),
+                      padding: const EdgeInsets.only(left: 6),
+                      child: _FilterChip(
+                        label: '${entry.key} (${entry.value})',
+                        selected: activeFilter == entry.key,
+                        onTap: () {
+                          if (activeFilter == entry.key) {
+                            controller.setCategoryFilter(null);
+                          } else {
+                            controller.setCategoryFilter(entry.key);
+                          }
+                        },
+                      ),
+                    )),
               ],
             ),
           ),
@@ -334,17 +352,31 @@ class _FilterSortBar extends StatelessWidget {
         // Sort controls
         Row(
           children: [
-            Text('Trier par : ', style: TextStyle(fontSize: 12, color: colors.onSurface.withValues(alpha: 0.5))),
-            _SortChip(label: 'Date', selected: activeSortCriteria == SortCriteria.date, onTap: () => controller.setSortCriteria(SortCriteria.date)),
+            Text('Trier par : ',
+                style: TextStyle(
+                    fontSize: 12,
+                    color: colors.onSurface.withValues(alpha: 0.5))),
+            _SortChip(
+                label: 'Date',
+                selected: activeSortCriteria == SortCriteria.date,
+                onTap: () => controller.setSortCriteria(SortCriteria.date)),
             const SizedBox(width: 4),
-            _SortChip(label: 'Taille', selected: activeSortCriteria == SortCriteria.size, onTap: () => controller.setSortCriteria(SortCriteria.size)),
+            _SortChip(
+                label: 'Taille',
+                selected: activeSortCriteria == SortCriteria.size,
+                onTap: () => controller.setSortCriteria(SortCriteria.size)),
             const SizedBox(width: 4),
-            _SortChip(label: 'Seeders', selected: activeSortCriteria == SortCriteria.seeders, onTap: () => controller.setSortCriteria(SortCriteria.seeders)),
+            _SortChip(
+                label: 'Seeders',
+                selected: activeSortCriteria == SortCriteria.seeders,
+                onTap: () => controller.setSortCriteria(SortCriteria.seeders)),
             const Spacer(),
             GestureDetector(
               onTap: controller.toggleSortDirection,
               child: Icon(
-                controller.query.sortDescending ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+                controller.query.sortDescending
+                    ? Icons.arrow_downward_rounded
+                    : Icons.arrow_upward_rounded,
                 size: 18,
                 color: colors.primary,
               ),
@@ -357,7 +389,8 @@ class _FilterSortBar extends StatelessWidget {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.selected, required this.onTap});
+  const _FilterChip(
+      {required this.label, required this.selected, required this.onTap});
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -370,10 +403,14 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? colors.primary.withValues(alpha: 0.15) : const Color(0xFF1A1B26),
+          color: selected
+              ? colors.primary.withValues(alpha: 0.15)
+              : const Color(0xFF1A1B26),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? colors.primary : colors.outlineVariant.withValues(alpha: 0.12),
+            color: selected
+                ? colors.primary
+                : colors.outlineVariant.withValues(alpha: 0.12),
           ),
         ),
         child: Text(
@@ -381,7 +418,9 @@ class _FilterChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-            color: selected ? colors.primary : colors.onSurface.withValues(alpha: 0.7),
+            color: selected
+                ? colors.primary
+                : colors.onSurface.withValues(alpha: 0.7),
           ),
         ),
       ),
@@ -390,7 +429,8 @@ class _FilterChip extends StatelessWidget {
 }
 
 class _SortChip extends StatelessWidget {
-  const _SortChip({required this.label, required this.selected, required this.onTap});
+  const _SortChip(
+      {required this.label, required this.selected, required this.onTap});
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -403,7 +443,9 @@ class _SortChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: selected ? colors.primary.withValues(alpha: 0.12) : Colors.transparent,
+          color: selected
+              ? colors.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -411,7 +453,9 @@ class _SortChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-            color: selected ? colors.primary : colors.onSurface.withValues(alpha: 0.5),
+            color: selected
+                ? colors.primary
+                : colors.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ),
@@ -467,19 +511,21 @@ class _TorrentResultCard extends StatelessWidget {
                   child: Text(
                     result.title,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (isSending)
                   const SizedBox(
-                    width: 16, height: 16,
+                    width: 16,
+                    height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 else if (isSent)
-                  const Icon(Icons.check_circle_rounded, size: 16, color: Color(0xFF81C784))
+                  const Icon(Icons.check_circle_rounded,
+                      size: 16, color: Color(0xFF81C784))
                 else if (isError)
                   Icon(Icons.error_rounded, size: 16, color: colors.error),
               ],
@@ -492,23 +538,30 @@ class _TorrentResultCard extends StatelessWidget {
               children: [
                 if (result.categoryLabel != null) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: colors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       result.categoryLabel!,
-                      style: TextStyle(fontSize: 11, color: colors.primary, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: colors.primary,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                   const SizedBox(width: 8),
                 ],
-                Icon(Icons.access_time_rounded, size: 12, color: colors.onSurface.withValues(alpha: 0.4)),
+                Icon(Icons.access_time_rounded,
+                    size: 12, color: colors.onSurface.withValues(alpha: 0.4)),
                 const SizedBox(width: 3),
                 Text(
                   FormatUtils.formatRelativeAge(result.createdAt),
-                  style: TextStyle(fontSize: 11, color: colors.onSurface.withValues(alpha: 0.5)),
+                  style: TextStyle(
+                      fontSize: 11,
+                      color: colors.onSurface.withValues(alpha: 0.5)),
                 ),
               ],
             ),
@@ -518,9 +571,13 @@ class _TorrentResultCard extends StatelessWidget {
             // Metadata row: size, files, seeders, leechers
             Row(
               children: [
-                _MetaChip(icon: Icons.storage_rounded, label: FormatUtils.formatBytes(result.totalSize)),
+                _MetaChip(
+                    icon: Icons.storage_rounded,
+                    label: FormatUtils.formatBytes(result.totalSize)),
                 const SizedBox(width: 10),
-                _MetaChip(icon: Icons.insert_drive_file_rounded, label: '${result.fileCount}'),
+                _MetaChip(
+                    icon: Icons.insert_drive_file_rounded,
+                    label: '${result.fileCount}'),
                 const Spacer(),
                 _MetaChip(
                   icon: Icons.arrow_upward_rounded,
@@ -562,13 +619,15 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
+    final defaultColor =
+        Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 13, color: color ?? defaultColor),
         const SizedBox(width: 3),
-        Text(label, style: TextStyle(fontSize: 11, color: color ?? defaultColor)),
+        Text(label,
+            style: TextStyle(fontSize: 11, color: color ?? defaultColor)),
       ],
     );
   }

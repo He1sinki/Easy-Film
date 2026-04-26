@@ -21,9 +21,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _fbUser = TextEditingController();
   final _fbPass = TextEditingController();
   final _target = TextEditingController();
+  final _c411Url = TextEditingController();
+  final _c411ApiKey = TextEditingController();
 
   bool _showQbPass = false;
   bool _showFbPass = false;
+  bool _showC411ApiKey = false;
 
   @override
   void initState() {
@@ -36,12 +39,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _syncControllers() {
     final model = _controller.model;
     if (_qbUrl.text != model.qbittorrentUrl) _qbUrl.text = model.qbittorrentUrl;
-    if (_qbUser.text != model.qbittorrentUsername) _qbUser.text = model.qbittorrentUsername;
-    if (_qbPass.text != model.qbittorrentPassword) _qbPass.text = model.qbittorrentPassword;
+    if (_qbUser.text != model.qbittorrentUsername)
+      _qbUser.text = model.qbittorrentUsername;
+    if (_qbPass.text != model.qbittorrentPassword)
+      _qbPass.text = model.qbittorrentPassword;
     if (_fbUrl.text != model.filebrowserUrl) _fbUrl.text = model.filebrowserUrl;
-    if (_fbUser.text != model.filebrowserUsername) _fbUser.text = model.filebrowserUsername;
-    if (_fbPass.text != model.filebrowserPassword) _fbPass.text = model.filebrowserPassword;
+    if (_fbUser.text != model.filebrowserUsername)
+      _fbUser.text = model.filebrowserUsername;
+    if (_fbPass.text != model.filebrowserPassword)
+      _fbPass.text = model.filebrowserPassword;
     if (_target.text != model.targetFolder) _target.text = model.targetFolder;
+    if (_c411Url.text != model.c411ApiBaseUrl)
+      _c411Url.text = model.c411ApiBaseUrl;
+    if (_c411ApiKey.text != model.c411ApiKey)
+      _c411ApiKey.text = model.c411ApiKey;
 
     // Show snackbar for success/error
     if (_controller.success != null && mounted) {
@@ -62,8 +73,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         content: Row(
           children: [
             Icon(
-              isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
-              color: isError ? const Color(0xFFEF5350) : const Color(0xFF81C784),
+              isError
+                  ? Icons.error_outline_rounded
+                  : Icons.check_circle_outline_rounded,
+              color:
+                  isError ? const Color(0xFFEF5350) : const Color(0xFF81C784),
               size: 18,
             ),
             const SizedBox(width: 8),
@@ -86,6 +100,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _fbUser.dispose();
     _fbPass.dispose();
     _target.dispose();
+    _c411Url.dispose();
+    _c411ApiKey.dispose();
     super.dispose();
   }
 
@@ -126,6 +142,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
                 const SizedBox(height: AppSpacing.lg),
 
+                // ── c411 section ──
+                _buildC411Section(),
+                const SizedBox(height: AppSpacing.lg),
+
                 // ── Target folder section ──
                 _SettingsSection(
                   icon: Icons.movie_rounded,
@@ -150,8 +170,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: _controller.isLoading ? null : _save,
                   child: _controller.isLoading
                       ? const SizedBox(
-                          height: 18, width: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Text('Sauvegarder'),
                 ),
@@ -207,7 +229,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             labelText: 'Mot de passe',
             prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
             suffixIcon: IconButton(
-              icon: Icon(_showQbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+              icon: Icon(
+                  _showQbPass
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  size: 20),
               onPressed: () => setState(() => _showQbPass = !_showQbPass),
             ),
           ),
@@ -216,13 +242,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: _controller.isTestingQb ? null : () {
-              _syncModelFromFields();
-              _controller.testQbConnection();
-            },
+            onPressed: _controller.isTestingQb
+                ? null
+                : () {
+                    _syncModelFromFields();
+                    _controller.testQbConnection();
+                  },
             icon: _controller.isTestingQb
                 ? const SizedBox(
-                    height: 16, width: 16,
+                    height: 16,
+                    width: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.wifi_tethering_rounded, size: 18),
@@ -238,7 +267,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       icon: Icons.folder_rounded,
       iconColor: const Color(0xFFFFA726),
       title: 'FileBrowser',
-      subtitle: 'Permet de naviguer dans les fichiers et lancer les téléchargements.',
+      subtitle:
+          'Permet de naviguer dans les fichiers et lancer les téléchargements.',
       children: [
         TextField(
           controller: _fbUrl,
@@ -264,7 +294,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             labelText: 'Mot de passe',
             prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
             suffixIcon: IconButton(
-              icon: Icon(_showFbPass ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 20),
+              icon: Icon(
+                  _showFbPass
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  size: 20),
               onPressed: () => setState(() => _showFbPass = !_showFbPass),
             ),
           ),
@@ -273,17 +307,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
-            onPressed: _controller.isTestingFb ? null : () {
-              _syncModelFromFields();
-              _controller.testFbConnection();
-            },
+            onPressed: _controller.isTestingFb
+                ? null
+                : () {
+                    _syncModelFromFields();
+                    _controller.testFbConnection();
+                  },
             icon: _controller.isTestingFb
                 ? const SizedBox(
-                    height: 16, width: 16,
+                    height: 16,
+                    width: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.wifi_tethering_rounded, size: 18),
             label: const Text('Tester'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildC411Section() {
+    return _SettingsSection(
+      icon: Icons.hub_rounded,
+      iconColor: const Color(0xFFFF6B6B),
+      title: 'c411',
+      subtitle: 'Source des resultats torrents (API REST).',
+      children: [
+        TextField(
+          controller: _c411Url,
+          decoration: const InputDecoration(
+            labelText: 'URL API',
+            hintText: 'https://c411.org',
+            prefixIcon: Icon(Icons.link_rounded, size: 20),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: _c411ApiKey,
+          obscureText: !_showC411ApiKey,
+          decoration: InputDecoration(
+            labelText: 'API key (Bearer token)',
+            hintText: 'xxxx...',
+            prefixIcon: const Icon(Icons.vpn_key_outlined, size: 20),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _showC411ApiKey
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
+                size: 20,
+              ),
+              onPressed: () =>
+                  setState(() => _showC411ApiKey = !_showC411ApiKey),
+            ),
           ),
         ),
       ],
@@ -305,6 +381,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         filebrowserUsername: _fbUser.text.trim(),
         filebrowserPassword: _fbPass.text,
         targetFolder: _target.text.trim(),
+        c411ApiBaseUrl: _c411Url.text.trim(),
+        c411ApiKey: _c411ApiKey.text.trim(),
       ),
     );
   }
@@ -358,7 +436,8 @@ class _SettingsSection extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 2),
                     Text(

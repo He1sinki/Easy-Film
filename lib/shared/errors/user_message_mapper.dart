@@ -4,10 +4,12 @@ import 'package:easy_film/shared/models/app_error.dart';
 class UserMessageMapper {
   static String fromError(Object error) {
     if (error is DioException) {
-      final payload = '${error.message ?? ''} ${error.error ?? ''}'.toLowerCase();
-      final looksLikeCors = payload.contains('xmlhttprequest') || payload.contains('cors');
+      final payload =
+          '${error.message ?? ''} ${error.error ?? ''}'.toLowerCase();
+      final looksLikeCors =
+          payload.contains('xmlhttprequest') || payload.contains('cors');
       if (looksLikeCors) {
-        return 'Requête bloquée par CORS sur le navigateur. En local: qBittorrent via `http://localhost:8788`, FileBrowser via `http://localhost:8787`.';
+        return 'Requête bloquée par CORS sur le navigateur. En local: qBittorrent via `http://localhost:8788`, FileBrowser via `http://localhost:8787`, c411 via `http://localhost:8789`.';
       }
       return 'Réseau indisponible. Vérifiez votre connexion et réessayez.';
     }

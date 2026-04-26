@@ -7,7 +7,9 @@ class SettingsValidator {
         model.qbittorrentPassword.isEmpty ||
         model.filebrowserUrl.isEmpty ||
         model.filebrowserUsername.isEmpty ||
-        model.filebrowserPassword.isEmpty) {
+        model.filebrowserPassword.isEmpty ||
+        model.c411ApiBaseUrl.isEmpty ||
+        model.c411ApiKey.isEmpty) {
       return 'Tous les champs sont obligatoires.';
     }
 
@@ -26,6 +28,17 @@ class SettingsValidator {
       return 'FileBrowser doit utiliser HTTPS (sauf hôte local/IP privée en développement).';
     }
 
+    final c411Uri = Uri.tryParse(model.c411ApiBaseUrl);
+    if (c411Uri == null || !c411Uri.hasScheme || !c411Uri.hasAuthority) {
+      return 'URL c411 invalide.';
+    }
+    final c411IsHttps = c411Uri.scheme == 'https';
+    final c411IsLocalHttp =
+        c411Uri.scheme == 'http' && _isLocalDevHost(c411Uri.host);
+    if (!c411IsHttps && !c411IsLocalHttp) {
+      return 'c411 doit utiliser HTTPS (sauf hote local/IP privee en developpement).';
+    }
+
     if (model.targetFolder.trim().isEmpty) {
       return 'Le dossier cible est obligatoire.';
     }
@@ -34,7 +47,9 @@ class SettingsValidator {
 
   static bool _isLocalDevHost(String host) {
     final normalized = host.toLowerCase();
-    if (normalized == 'localhost' || normalized == '127.0.0.1' || normalized == '::1') {
+    if (normalized == 'localhost' ||
+        normalized == '127.0.0.1' ||
+        normalized == '::1') {
       return true;
     }
 
@@ -65,6 +80,10 @@ class SettingsValidator {
     final isCarrierGradeNat = a == 100 && b >= 64 && b <= 127;
     final isLinkLocal = a == 169 && b == 254;
 
-    return isPrivate10 || isPrivate172 || isPrivate192 || isCarrierGradeNat || isLinkLocal;
+    return isPrivate10 ||
+        isPrivate172 ||
+        isPrivate192 ||
+        isCarrierGradeNat ||
+        isLinkLocal;
   }
 }

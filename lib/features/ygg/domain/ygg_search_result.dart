@@ -13,7 +13,7 @@ class TorrentFile extends Equatable {
   List<Object?> get props => [name, size];
 }
 
-/// A torrent search result parsed from a Nostr NIP-35 Kind 2003 event.
+/// A torrent search result parsed from a torrent search provider payload.
 class YggSearchResult extends Equatable {
   const YggSearchResult({
     required this.id,
@@ -47,11 +47,43 @@ class YggSearchResult extends Equatable {
   final List<String> trackers;
   final List<TorrentFile> files;
 
-  /// Parse a raw Nostr event (Map) into a [YggSearchResult].
-  ///
-  /// Handles both NIP-35 file tag formats:
-  /// 1. `["file", "name;size"]`
-  /// 2. `["file", "name", "size"]`
+  /// Parse a c411 API item (single object from `data[]`) into a [YggSearchResult].
+  factory YggSearchResult.fromC411Json(Map<String, dynamic> item) {
+    final category = _asMap(item['category']);
+    final subcategory = _asMap(item['subcategory']);
+
+    final title = item['name']?.toString().trim();
+    final infoHash = item['infoHash']?.toString().trim() ?? '';
+    final size = _toInt(item['size']);
+    final createdAt = _parseCreatedAt(item['createdAt']);
+    final categoryId = (subcategory['id'] ?? category['id'])?.toString();
+    final categoryLabel = (subcategory['name'] ?? category['name'])?.toString();
+
+    final resolvedTitle =
+        (title == null || title.isEmpty) ? 'Sans titre' : title;
+
+    return YggSearchResult(
+      id: item['id']?.toString() ?? '',
+      infoHash: infoHash,
+      title: resolvedTitle,
+      categoryId: categoryId,
+      categoryLabel: categoryLabel,
+      totalSize: size,
+      createdAt: createdAt,
+      fileCount: 0,
+      seeders: _toInt(item['seeders']),
+      leechers: _toInt(item['leechers']),
+      completed: _toInt(item['completions']),
+      magnetUri: MagnetUriBuilder.build(
+        infoHash: infoHash,
+        title: resolvedTitle,
+      ),
+      trackers: const [],
+      files: const [],
+    );
+  }
+
+  /// Legacy parser for older Nostr event payloads.
   factory YggSearchResult.fromNostrEvent(Map<String, dynamic> event) {
     final tags = (event['tags'] as List<dynamic>?)?.cast<List<dynamic>>() ?? [];
 
@@ -87,7 +119,9 @@ class YggSearchResult extends Equatable {
         case 'tracker':
           if (tag.length >= 2) trackers.add(tag[1].toString());
         case 'l':
-          if (tag.length >= 2) _parseLabelTag(tag[1].toString(), (cat) => categoryId = cat, (s) => seeders = s, (l) => leechers = l, (c) => completed = c);
+          if (tag.length >= 2)
+            _parseLabelTag(tag[1].toString(), (cat) => categoryId = cat,
+                (s) => seeders = s, (l) => leechers = l, (c) => completed = c);
         case 'published_at':
           if (tag.length >= 2) {
             createdAt = int.tryParse(tag[1].toString()) ?? createdAt;
@@ -128,6 +162,24 @@ class YggSearchResult extends Equatable {
       trackers: trackers,
       files: files,
     );
+  }
+
+  static Map<String, dynamic> _asMap(Object? value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const <String, dynamic>{};
+  }
+
+  static int _toInt(Object? value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static int _parseCreatedAt(Object? value) {
+    if (value is int) return value;
+    final date = DateTime.tryParse(value?.toString() ?? '');
+    if (date == null) return 0;
+    return date.millisecondsSinceEpoch ~/ 1000;
   }
 
   static TorrentFile? _parseFileTag(List<dynamic> tag) {
@@ -171,5 +223,14 @@ class YggSearchResult extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, infoHash, title, categoryId, totalSize, createdAt, seeders, leechers];
+  List<Object?> get props => [
+        id,
+        infoHash,
+        title,
+        categoryId,
+        totalSize,
+        createdAt,
+        seeders,
+        leechers
+      ];
 }

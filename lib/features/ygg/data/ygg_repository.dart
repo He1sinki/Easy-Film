@@ -1,7 +1,7 @@
 import 'package:easy_film/features/ygg/data/ygg_datasource.dart';
 import 'package:easy_film/features/ygg/domain/ygg_search_result.dart';
 
-/// Repository orchestrating Ygg torrent search.
+/// Repository orchestrating torrent search.
 ///
 /// Handles deduplication by infoHash and delegates to [YggDatasource].
 class YggRepository {
@@ -23,7 +23,7 @@ class YggRepository {
     _datasource.cancelSearch();
   }
 
-  /// Disconnect from the relay.
+  /// Cleanup active datasource resources.
   Future<void> disconnect() async {
     await _datasource.disconnect();
   }
