@@ -111,7 +111,7 @@ class YggDatasource {
       return 'https://c411.org';
     }
 
-    return uri.replace(path: '', query: '', fragment: '').toString();
+    return uri.origin;
   }
 
   /// Cancel the current HTTP search request.
